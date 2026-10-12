@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cash-Flow | Salary &amp; Expense Tracker</title>
+
+  <!-- Fonts (fall back to system fonts if offline) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Libraries via CDN. "defer" keeps execution order: Chart.js, jsPDF, then our script. -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <div class="page">
+
+    <header class="topbar">
+      <h1 class="brand">Cash-Flow</h1>
+      <div class="topbar-actions">
+        <label for="currency" class="inline-label">Currency</label>
+        <select id="currency">
+          <option value="INR">INR (₹)</option>
+          <option value="USD">USD ($)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="GBP">GBP (£)</option>
+          <option value="JPY">JPY (¥)</option>
+        </select>
+        <button id="download-btn" class="btn btn-ghost" type="button">Download report</button>
+      </div>
+    </header>
+
+    <!-- Critical alert banner: shown when balance < 10% of salary -->
+    <div id="alert-banner" class="alert-banner" role="alert" hidden>
+      <strong>Low balance.</strong>
+      <span id="alert-text"></span>
+    </div>
+
+    <main class="layout">
+
+      <!-- Balance (the main number) -->
+      <section class="panel summary" aria-labelledby="balance-label">
+        <p id="balance-label" class="label"><span class="dot dot-remaining"></span>Remaining balance</p>
+        <p id="balance" class="balance">0</p>
+        <p id="balance-sub" class="muted"></p>
+
+        <dl class="figures">
+          <div>
+            <dt>Total salary</dt>
+            <dd id="salary-display">0</dd>
+          </div>
+          <div>
+            <dt><span class="dot dot-expense"></span>Total expenses</dt>
+            <dd id="expenses-display">0</dd>
+          </div>
+        </dl>
+
+        <p id="equation" class="equation"></p>
+      </section>
+
+      <!-- Pie chart -->
+      <section class="panel chart-panel" aria-labelledby="chart-title">
+        <h2 id="chart-title">Remaining vs. expenses</h2>
+        <div class="chart-wrap">
+          <canvas id="chart" aria-label="Pie chart of remaining balance versus total expenses" role="img"></canvas>
+        </div>
+        <p id="chart-note" class="muted"></p>
+      </section>
+
+      <!-- Forms -->
+      <section class="panel entry" aria-labelledby="entry-title">
+        <h2 id="entry-title">Add your numbers</h2>
+        <p id="currency-hint" class="muted"></p>
+
+        <form id="salary-form" novalidate>
+          <label for="salary-input">Total salary</label>
+          <div class="row">
+            <input id="salary-input" type="number" inputmode="decimal" step="any" min="0" placeholder="e.g. 50000">
+            <button id="set-salary-btn" class="btn btn-primary" type="button">Set salary</button>
+          </div>
+          <p id="salary-error" class="error" role="alert" hidden></p>
+        </form>
+
+        <form id="expense-form" novalidate>
+          <label for="expense-name">Expense name</label>
+          <input id="expense-name" type="text" maxlength="40" placeholder="e.g. Rent" autocomplete="off">
+
+          <label for="expense-amount">Expense amount</label>
+          <div class="row">
+            <input id="expense-amount" type="number" inputmode="decimal" step="any" min="0" placeholder="e.g. 12000">
+            <button id="add-expense-btn" class="btn btn-primary" type="button">Add expense</button>
+          </div>
+          <p id="expense-error" class="error" role="alert" hidden></p>
+        </form>
+      </section>
+
+      <!-- Expense list -->
+      <section class="panel list-panel" aria-labelledby="list-title">
+        <div class="list-head">
+          <h2 id="list-title">Expenses</h2>
+          <span id="expense-count" class="muted"></span>
+        </div>
+        <ul id="expense-list" class="expense-list"></ul>
+        <p id="empty-state" class="muted" hidden>No expenses yet. Add one with the form to see it here.</p>
+      </section>
+
+    </main>
+
+    <p id="rate-note" class="muted rate-note"></p>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
